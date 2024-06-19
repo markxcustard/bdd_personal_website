@@ -29,11 +29,6 @@ Feature: Navigation menu
     Given I open the website "https://markxcustard.github.io/"
     Then the homepage should display the correct title
 
-  @github_personal_website_automation
-  Scenario: Redirect to GitHub repository
-    Given I open the website "https://markxcustard.github.io/"
-    When I click on the GitHub link
-    Then I should be directed to "https://github.com/markxcustard/personal_website_automation"
 
   @resume
   Scenario: Download resume
@@ -136,3 +131,15 @@ Feature: Navigation menu
     Given I open the website "https://markxcustard.github.io/"
     When I tap on the LinkedIn button
     Then the user is directed to "https://www.linkedin.com/in/mark-custard/"
+
+  @automation
+  Scenario: Redirect to Automation repository
+    Given I open the website "https://markxcustard.github.io/"
+    When I tap on the Automation link
+    Then the user is directed to "https://github.com/markxcustard/personal_website_automation"
+
+  @bdd
+  Scenario: Redirect to BDD repository
+    Given I open the website "https://markxcustard.github.io/"
+    When I tap on the BDD link
+    Then the user is directed to "https://github.com/markxcustard/bdd_personal_website"

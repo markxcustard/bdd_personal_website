@@ -86,19 +86,6 @@ def step_impl(context):
     context.driver.quit()
     time.sleep(1)
 
-@when('I click on the GitHub link')
-def step_impl(context):
-    github_link = context.driver.find_element(By.XPATH, '//*[@id="about"]/div/div/div/p[5]/a')
-    github_link.click()
-    time.sleep(1)
-
-@then('I should be directed to "https://github.com/markxcustard/personal_website_automation"')
-def step_impl(context):
-    context.driver.switch_to.window(context.driver.window_handles[-1])
-    assert context.driver.current_url == "https://github.com/markxcustard/personal_website_automation"
-    context.driver.quit()
-    time.sleep(1)
-
 @when('I click on the download resume button')
 def step_impl(context):
     resume_button = context.driver.find_element(By.XPATH, '//*[@id="about"]/div/div/div/div/a')
@@ -412,3 +399,47 @@ def step_impl(context):
     assert context.driver.current_url == "https://www.linkedin.com/in/mark-custard/"
     context.driver.quit()
     time.sleep(1)
+
+@when('I tap on the Automation link')
+def step_impl(context):
+    automation_link = context.driver.find_element(By.XPATH, '//*[@id="about"]/div/div/div/p[5]/a[1]')
+    print(f"Clicking on Automation link at location: {automation_link.location} with size: {automation_link.size}")
+    automation_link.click()
+    time.sleep(1)
+    print(f"Current URL after clicking Automation link: {context.driver.current_url}")
+    context.driver.switch_to.window(context.driver.window_handles[-1])
+
+@then('the user is directed to "https://github.com/markxcustard/personal_website_automation"')
+def step_impl(context):
+    try:
+        WebDriverWait(context.driver, 20).until(EC.url_contains("https://github.com/markxcustard/personal_website_automation"))
+        print(f"Final URL: {context.driver.current_url}")
+        assert context.driver.current_url == "https://github.com/markxcustard/personal_website_automation"
+    except Exception as e:
+        print(f"Error: {e}")
+        print(f"Debug Info: Current URL: {context.driver.current_url}")
+        raise e
+    finally:
+        context.driver.quit()
+
+@when('I tap on the BDD link')
+def step_impl(context):
+    bdd_link = context.driver.find_element(By.XPATH, '//*[@id="about"]/div/div/div/p[5]/a[2]')
+    print(f"Clicking on BDD link at location: {bdd_link.location} with size: {bdd_link.size}")
+    bdd_link.click()
+    time.sleep(1)
+    print(f"Current URL after clicking BDD link: {context.driver.current_url}")
+    context.driver.switch_to.window(context.driver.window_handles[-1])
+
+@then('the user is directed to "https://github.com/markxcustard/bdd_personal_website"')
+def step_impl(context):
+    try:
+        WebDriverWait(context.driver, 20).until(EC.url_contains("https://github.com/markxcustard/bdd_personal_website"))
+        print(f"Final URL: {context.driver.current_url}")
+        assert context.driver.current_url == "https://github.com/markxcustard/bdd_personal_website"
+    except Exception as e:
+        print(f"Error: {e}")
+        print(f"Debug Info: Current URL: {context.driver.current_url}")
+        raise e
+    finally:
+        context.driver.quit()
