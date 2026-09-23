@@ -1,0 +1,46 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # The suite runs against the deployed site, so a nightly run catches
+    # content drift even when this repository hasn't changed.
+    - cron: "30 7 * * *"
+  workflow_dispatch:
+
+jobs:
+  behave:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chrome, firefox]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run the scenarios against ${{ matrix.browser }}
+        run: >
+          behave
+          -D browser=${{ matrix.browser }}
+          -D headless=true
+          --junit --junit-directory reports
+          --no-skipped
+
+      - name: Upload JUnit results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: behave-results-${{ matrix.browser }}
+          path: reports/
+          if-no-files-found: ignore

@@ -1,2 +1,19 @@
-stake_card_not_collapsed.png
+# macOS
 .DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Environments
+.env
+.venv
+env/
+venv/
+
+# Behave artefacts
+reports/
+
+# Editors
+.vscode/
+.idea/
