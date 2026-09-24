@@ -78,12 +78,23 @@ Feature: Navigating the portfolio
     When I open the "hero" section from the menu
     Then the hero heading should be "Mark Custard"
     And the hero should rotate through the roles:
-      | role                      |
-      | QA & Automation Lead      |
-      | Test Automation Engineer  |
-      | Full-Stack Engineer       |
-      | API Testing Specialist    |
-      | Test Strategy Owner       |
+      | role                        |
+      | a QA & Automation Lead      |
+      | a Test Automation Engineer  |
+      | a Full-Stack Engineer       |
+      | an API Testing Specialist   |
+      | a Test Strategy Owner       |
 
   Scenario: The footer is reachable
     Then the footer should be visible
+
+  # Each item carries its own article, so a vowel-initial role reads "an".
+  # With "I'm a" fixed in the markup the hero said "I'm a API Testing Specialist".
+  Scenario: Every role is correctly articled
+    Then every hero role should begin with an article
+    And the hero roles should include "an API Testing Specialist"
+
+  # main.js split the items on ',' without trimming, so every role after the
+  # first rendered as "I'm a  Test Automation Engineer" with two spaces.
+  Scenario: The hero line never renders a double space
+    Then the hero line should read cleanly once a full role is typed

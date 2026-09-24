@@ -93,3 +93,41 @@ def step_hero_roles(context):
 @then("the footer should be visible")
 def step_footer_visible(context):
     assert context.site.reveal_one((By.ID, "footer")).is_displayed()
+
+
+@then("every hero role should begin with an article")
+def step_roles_articled(context):
+    bad = [
+        role
+        for role in context.site.hero_typed_items()
+        if not (role.startswith("a ") or role.startswith("an "))
+    ]
+    assert not bad, f"roles without an article: {bad}"
+
+
+@then('the hero roles should include "{role}"')
+def step_roles_include(context, role):
+    items = context.site.hero_typed_items()
+    assert role in items, f"{role!r} not among {items}"
+
+
+@then("the hero line should read cleanly once a full role is typed")
+def step_hero_line_clean(context):
+    roles = context.site.hero_typed_items()
+    captured = {}
+
+    def a_complete_role_is_showing():
+        snapshot = context.site.hero_snapshot()
+        if snapshot["role"] in roles:
+            captured.update(snapshot)
+            return True
+        return False
+
+    context.site.wait_until(
+        a_complete_role_is_showing,
+        timeout=30,
+        message="Typed.js never settled on a complete role",
+    )
+
+    assert "  " not in captured["line"], repr(captured["line"])
+    assert captured["line"].startswith(f"I'm {captured['role']}")

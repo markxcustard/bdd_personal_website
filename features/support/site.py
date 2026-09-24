@@ -146,6 +146,22 @@ class Site:
         ]
 
     # ------------------------------------------------------------------ content
+    def hero_snapshot(self):
+        """The hero line and typed role read together, so the pair is
+        consistent — Typed.js advances between two separate calls."""
+        return self.driver.execute_script(
+            """
+            return {
+              line: document.querySelector('#hero p').textContent,
+              role: document.querySelector('#hero .typed').textContent,
+            };
+            """
+        )
+
+    def hero_typed_items(self):
+        typed = self.find((By.CSS_SELECTOR, "#hero .typed"))
+        return [i.strip() for i in typed.get_attribute("data-typed-items").split(",")]
+
     def about_facts(self):
         return self.driver.execute_script(
             """
