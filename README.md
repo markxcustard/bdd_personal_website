@@ -4,7 +4,7 @@ Behaviour-driven tests for [markcustard.com](https://markcustard.com/) — my
 portfolio site — written in Gherkin and executed with Behave and Selenium
 WebDriver.
 
-**8 features, 93 scenarios, 312 steps.**
+**8 features, 94 scenarios, 314 steps.**
 
 | Feature | Covers |
 | --- | --- |

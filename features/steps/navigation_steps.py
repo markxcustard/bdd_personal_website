@@ -131,3 +131,20 @@ def step_hero_line_clean(context):
 
     assert "  " not in captured["line"], repr(captured["line"])
     assert captured["line"].startswith(f"I'm {captured['role']}")
+
+
+@then("the hero should be seen part-way through the first role at least {count:d} times")
+def step_hero_types_forward(context, count):
+    first_role = context.site.hero_typed_items()[0]
+    assert "&" in first_role, "this guard depends on the first role containing '&'"
+    stalled_at = first_role.index("&")
+
+    seen = context.site.sample_typed_text()
+    partials = [
+        text
+        for text in seen
+        if first_role.startswith(text) and stalled_at < len(text) < len(first_role)
+    ]
+    assert len(partials) >= count, (
+        f"expected the role typed past the '&' in steps; saw {seen}"
+    )

@@ -98,3 +98,11 @@ Feature: Navigating the portfolio
   # first rendered as "I'm a  Test Automation Engineer" with two spaces.
   Scenario: The hero line never renders a double space
     Then the hero line should read cleanly once a full role is typed
+
+  # Two defects made the hero look broken. The markup left the first role in
+  # the span as a no-JS fallback, so Typed.js treated it as already typed and
+  # backspaced it on arrival. And in its default 'html' mode Typed.js reads
+  # '&' as the start of an entity and skips to the next ';' — "a QA &
+  # Automation Lead" has none, so everything after "a QA " appeared at once.
+  Scenario: The hero types the first role forward, through the ampersand
+    Then the hero should be seen part-way through the first role at least 3 times

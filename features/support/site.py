@@ -146,6 +146,19 @@ class Site:
         ]
 
     # ------------------------------------------------------------------ content
+    def sample_typed_text(self, seconds=4.0, interval=0.04):
+        """Every distinct value the typed span passes through, in order."""
+        seen = []
+        deadline = time.time() + seconds
+        while time.time() < deadline:
+            current = self.driver.execute_script(
+                "return document.querySelector('#hero .typed').textContent;"
+            )
+            if not seen or seen[-1] != current:
+                seen.append(current)
+            time.sleep(interval)
+        return seen
+
     def hero_snapshot(self):
         """The hero line and typed role read together, so the pair is
         consistent — Typed.js advances between two separate calls."""
