@@ -144,3 +144,37 @@ def step_heading_levels(context):
     levels = context.site.portfolio_heading_levels()
     assert levels[0] == "H2", f"section heading is {levels[0]}"
     assert set(levels[1:]) == {"H3"}, f"card headings are {set(levels[1:])}"
+
+
+@then("the project metrics should be:")
+def step_project_metrics(context):
+    metrics = context.site.portfolio_metrics()
+    for row in context.table:
+        assert metrics.get(row["title"]) == row["metric"], (
+            f"{row['title']}: metric is {metrics.get(row['title'])!r}, "
+            f"expected {row['metric']!r}"
+        )
+
+
+@then("no project description should be clipped")
+def step_no_clipping(context):
+    clipped = context.site.clipped_descriptions()
+    assert not clipped, f"descriptions cut off by the clamp: {clipped}"
+
+
+@then("clicking the middle of each card should open its repository")
+def step_card_clickable(context):
+    for title in context.site.portfolio_metrics():
+        target = context.site.card_click_target(title)
+        assert target and target.startswith("https://github.com/markxcustard/"), (
+            f"{title}: a click in the middle hits {target!r}"
+        )
+
+
+@then("every filter should be at least {size:d} by {size2:d} pixels")
+def step_tap_targets(context, size, size2):
+    too_small = [
+        c for c in context.site.filter_chip_boxes()
+        if c["height"] < size or c["width"] < size2
+    ]
+    assert not too_small, f"below {size}x{size2}: {too_small}"

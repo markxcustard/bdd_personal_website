@@ -101,3 +101,24 @@ Feature: Portfolio grid
 
   Scenario: Heading levels do not skip
     Then the portfolio headings should run h2 then h3
+
+  # The cards were 441px tall for three lines of text — about one phone screen
+  # each. They are one padded container now, and lead with a number.
+  Scenario: Each project advertises its headline number
+    Then the project metrics should be:
+      | title                       | metric       |
+      | Personal Website Automation | 167 tests    |
+      | BDD Personal Website        | 89 scenarios |
+      | Cypress Portfolio Tests     | 163 tests    |
+      | Pandas Filtering Films      | 54 tests     |
+      | Films CRUD                  | 60 tests     |
+
+  Scenario: No description is cut off by the three-line clamp
+    Then no project description should be clipped
+
+  Scenario: The whole card is a click target
+    Then clicking the middle of each card should open its repository
+
+  # The filters were bare 14px-tall text, far below a usable tap size.
+  Scenario: The filters are large enough to tap
+    Then every filter should be at least 44 by 44 pixels
