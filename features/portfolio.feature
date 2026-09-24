@@ -9,12 +9,13 @@ Feature: Portfolio grid
 
   @smoke
   Scenario: Every project is shown by default
-    Then 5 projects should be visible
+    Then 6 projects should be visible
     And the projects should be:
       | title                       | tags                          |
       | Personal Website Automation | Selenium, pytest, Page Objects |
       | BDD Personal Website        | BDD, Gherkin, Behave          |
       | Cypress Portfolio Tests     | Cypress, JavaScript, E2E      |
+      | Flight Delay Notifier       | pytest, Mocking, Fixtures     |
       | Pandas Filtering Films      | Python, Pandas, pytest        |
       | Films CRUD                  | SQLAlchemy, SQLite, pytest    |
 
@@ -25,6 +26,7 @@ Feature: Portfolio grid
       | Personal Website Automation | https://github.com/markxcustard/personal_website_automation |
       | BDD Personal Website        | https://github.com/markxcustard/bdd_personal_website        |
       | Cypress Portfolio Tests     | https://github.com/markxcustard/cypress_personal_website    |
+      | Flight Delay Notifier       | https://github.com/markxcustard/flight_delay_notifier       |
       | Pandas Filtering Films      | https://github.com/markxcustard/pandas_filtering_films      |
       | Films CRUD                  | https://github.com/markxcustard/database_crud               |
 
@@ -37,6 +39,7 @@ Feature: Portfolio grid
       | All        |
       | Automation |
       | BDD        |
+      | Unit       |
       | Data       |
       | Database   |
 
@@ -46,9 +49,10 @@ Feature: Portfolio grid
 
     Examples: filters
       | filter     | count |
-      | All        | 5     |
+      | All        | 6     |
       | Automation | 2     |
       | BDD        | 1     |
+      | Unit       | 1     |
       | Data       | 1     |
       | Database   | 1     |
 
@@ -66,13 +70,14 @@ Feature: Portfolio grid
     Examples: filters
       | filter   | title                  |
       | BDD      | BDD Personal Website   |
+      | Unit     | Flight Delay Notifier  |
       | Data     | Pandas Filtering Films |
       | Database | Films CRUD             |
 
   Scenario: The All filter restores the full grid
     When I filter the portfolio by "Automation" expecting 2 projects
-    And I filter the portfolio by "All" expecting 5 projects
-    Then 5 projects should be visible
+    And I filter the portfolio by "All" expecting 6 projects
+    Then 6 projects should be visible
 
   # The template shipped these filters as bare <li> elements with click
   # handlers, so they could not be reached or operated by keyboard at all.
@@ -107,9 +112,10 @@ Feature: Portfolio grid
   Scenario: Each project advertises its headline number
     Then the project metrics should be:
       | title                       | metric       |
-      | Personal Website Automation | 167 tests    |
-      | BDD Personal Website        | 89 scenarios |
-      | Cypress Portfolio Tests     | 163 tests    |
+      | Personal Website Automation | 174 tests    |
+      | BDD Personal Website        | 91 scenarios |
+      | Cypress Portfolio Tests     | 170 tests    |
+      | Flight Delay Notifier       | 91 tests     |
       | Pandas Filtering Films      | 54 tests     |
       | Films CRUD                  | 60 tests     |
 
