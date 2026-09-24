@@ -9,13 +9,14 @@ Feature: Portfolio grid
 
   @smoke
   Scenario: Every project is shown by default
-    Then 4 projects should be visible
+    Then 5 projects should be visible
     And the projects should be:
-      | title                       | tags                              |
-      | Personal Website Automation | Selenium, Python, Automation      |
-      | BDD Personal Website        | BDD, Gherkin, Selenium            |
-      | Pandas Filtering Films      | Python, Pandas, Data Analysis     |
-      | Films CRUD API              | API, SQLAlchemy, SQLite           |
+      | title                       | tags                          |
+      | Personal Website Automation | Selenium, pytest, Page Objects |
+      | BDD Personal Website        | BDD, Gherkin, Behave          |
+      | Cypress Portfolio Tests     | Cypress, JavaScript, E2E      |
+      | Pandas Filtering Films      | Python, Pandas, pytest        |
+      | Films CRUD                  | SQLAlchemy, SQLite, pytest    |
 
   @smoke
   Scenario: Each project links to its repository
@@ -23,8 +24,9 @@ Feature: Portfolio grid
       | title                       | url                                                        |
       | Personal Website Automation | https://github.com/markxcustard/personal_website_automation |
       | BDD Personal Website        | https://github.com/markxcustard/bdd_personal_website        |
+      | Cypress Portfolio Tests     | https://github.com/markxcustard/cypress_personal_website    |
       | Pandas Filtering Films      | https://github.com/markxcustard/pandas_filtering_films      |
-      | Films CRUD API              | https://github.com/markxcustard/database_crud               |
+      | Films CRUD                  | https://github.com/markxcustard/database_crud               |
 
   Scenario: Repository links open safely in a new tab
     Then every project link should open in a new tab with rel="noopener"
@@ -35,22 +37,67 @@ Feature: Portfolio grid
       | All        |
       | Automation |
       | BDD        |
-      | API        |
       | Data       |
+      | Database   |
 
-  Scenario Outline: Filtering narrows the grid to one project
-    When I filter the portfolio by "<filter>" expecting 1 project
-    Then only "<title>" should be visible
-    And the "<filter>" filter should be marked active
+  Scenario Outline: Filtering narrows the grid
+    When I filter the portfolio by "<filter>" expecting <count> projects
+    Then the "<filter>" filter should be marked active
 
     Examples: filters
-      | filter     | title                       |
-      | Automation | Personal Website Automation |
-      | BDD        | BDD Personal Website        |
-      | Data       | Pandas Filtering Films      |
-      | API        | Films CRUD API              |
+      | filter     | count |
+      | All        | 5     |
+      | Automation | 2     |
+      | BDD        | 1     |
+      | Data       | 1     |
+      | Database   | 1     |
+
+  Scenario: The Automation filter keeps both browser suites
+    When I filter the portfolio by "Automation" expecting 2 projects
+    Then the visible projects should be:
+      | title                       |
+      | Personal Website Automation |
+      | Cypress Portfolio Tests     |
+
+  Scenario Outline: Each single-project filter keeps the right one
+    When I filter the portfolio by "<filter>" expecting 1 project
+    Then only "<title>" should be visible
+
+    Examples: filters
+      | filter   | title                  |
+      | BDD      | BDD Personal Website   |
+      | Data     | Pandas Filtering Films |
+      | Database | Films CRUD             |
 
   Scenario: The All filter restores the full grid
-    When I filter the portfolio by "Automation" expecting 1 project
-    And I filter the portfolio by "All" expecting 4 projects
-    Then 4 projects should be visible
+    When I filter the portfolio by "Automation" expecting 2 projects
+    And I filter the portfolio by "All" expecting 5 projects
+    Then 5 projects should be visible
+
+  # The template shipped these filters as bare <li> elements with click
+  # handlers, so they could not be reached or operated by keyboard at all.
+  Scenario: The filters can be reached by keyboard
+    Then every filter should be focusable
+    And every filter should expose a button role
+
+  Scenario: Only the active filter reports itself as pressed
+    Then the "All" filter should report itself as pressed
+    When I filter the portfolio by "BDD" expecting 1 project
+    Then the "BDD" filter should report itself as pressed
+    And the "All" filter should not report itself as pressed
+
+  Scenario Outline: A filter can be activated with the keyboard
+    When I focus the "Automation" filter and press "<key>"
+    Then 2 projects should be visible
+    And the "Automation" filter should be marked active
+
+    Examples: keys
+      | key   |
+      | Enter |
+      | Space |
+
+  Scenario: Each repository link has a distinct accessible name
+    Then every project link should have its own accessible name
+
+  Scenario: Heading levels do not skip
+    Then the portfolio headings should run h2 then h3

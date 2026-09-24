@@ -173,7 +173,7 @@ class Site:
         return self.driver.execute_script(
             """
             return Array.from(document.querySelectorAll('#portfolio .portfolio-item')).map(i => ({
-              title: i.querySelector('.portfolio-card-header h4').textContent.trim(),
+              title: i.querySelector('.portfolio-card-header h3').textContent.trim(),
               tags: Array.from(i.querySelectorAll('.portfolio-tags .tag')).map(t => t.textContent.trim()),
               url: i.querySelector('a.github-link').href,
               target: i.querySelector('a.github-link').target,
@@ -184,7 +184,7 @@ class Site:
 
     def visible_portfolio_titles(self):
         return [
-            self.text_of(card.find_element(By.TAG_NAME, "h4"))
+            self.text_of(card.find_element(By.TAG_NAME, "h3"))
             for card in self.find_all((By.CSS_SELECTOR, "#portfolio .portfolio-card"))
             if card.is_displayed()
         ]
@@ -206,6 +206,43 @@ class Site:
                 f"{len(self.visible_portfolio_titles())} cards, expected {expected_count}"
             ),
         )
+        return self
+
+    def portfolio_link_labels(self):
+        return self.driver.execute_script(
+            "return Array.from(document.querySelectorAll('#portfolio a.github-link'))"
+            ".map(a => a.getAttribute('aria-label'));"
+        )
+
+    def portfolio_heading_levels(self):
+        return self.driver.execute_script(
+            "return Array.from(document.querySelectorAll('#portfolio h1,#portfolio h2,"
+            "#portfolio h3,#portfolio h4,#portfolio h5,#portfolio h6'))"
+            ".map(h => h.tagName);"
+        )
+
+    def filter_chips(self):
+        return self.driver.execute_script(
+            """
+            return Array.from(document.querySelectorAll('#portfolio .portfolio-filters li')).map(l => ({
+              label: l.textContent.trim(),
+              tabindex: l.tabIndex,
+              role: l.getAttribute('role'),
+              pressed: l.getAttribute('aria-pressed'),
+            }));
+            """
+        )
+
+    def press_filter_with_keyboard(self, label, key):
+        from selenium.webdriver.common.keys import Keys
+
+        keys = {"Enter": Keys.ENTER, "Space": Keys.SPACE}
+        chip = next(
+            c for c in self.reveal((By.CSS_SELECTOR, "#portfolio .portfolio-filters li"))
+            if self.text_of(c) == label
+        )
+        self.driver.execute_script("arguments[0].focus();", chip)
+        chip.send_keys(keys[key])
         return self
 
     def active_filter_label(self):

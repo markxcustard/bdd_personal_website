@@ -11,8 +11,16 @@ def step_open_portfolio(context):
 
 @then("{count:d} projects should be visible")
 def step_visible_count(context, count):
-    visible = context.site.visible_portfolio_titles()
-    assert len(visible) == count, f"expected {count} visible, got {visible}"
+    # Isotope animates cards in and out, so wait for the grid to settle rather
+    # than reading it once.
+    context.site.wait_until(
+        lambda: len(context.site.visible_portfolio_titles()) == count,
+        message=(
+            f"expected {count} visible, got "
+            f"{context.site.visible_portfolio_titles()}"
+        ),
+    )
+    assert len(context.site.visible_portfolio_titles()) == count
 
 
 @then("the projects should be:")
@@ -66,9 +74,73 @@ def step_filter(context, label, count):
 
 @then('only "{title}" should be visible')
 def step_only_visible(context, title):
+    context.site.wait_until(
+        lambda: context.site.visible_portfolio_titles() == [title],
+        message=f"visible: {context.site.visible_portfolio_titles()}",
+    )
     assert context.site.visible_portfolio_titles() == [title]
 
 
 @then('the "{label}" filter should be marked active')
 def step_filter_active(context, label):
+    context.site.wait_until(
+        lambda: context.site.active_filter_label() == label,
+        message=f"active filter is {context.site.active_filter_label()!r}",
+    )
     assert context.site.active_filter_label() == label
+
+
+@then("the visible projects should be:")
+def step_visible_projects(context):
+    expected = sorted(row["title"] for row in context.table)
+    context.site.wait_until(
+        lambda: sorted(context.site.visible_portfolio_titles()) == expected,
+        message=f"visible: {context.site.visible_portfolio_titles()}",
+    )
+    assert sorted(context.site.visible_portfolio_titles()) == expected
+
+
+@then("every filter should be focusable")
+def step_filters_focusable(context):
+    chips = context.site.filter_chips()
+    assert chips, "no filter chips found"
+    not_focusable = [c["label"] for c in chips if c["tabindex"] != 0]
+    assert not not_focusable, f"not reachable by keyboard: {not_focusable}"
+
+
+@then("every filter should expose a button role")
+def step_filters_have_role(context):
+    wrong = [c["label"] for c in context.site.filter_chips() if c["role"] != "button"]
+    assert not wrong, f"missing role=button: {wrong}"
+
+
+@then('the "{label}" filter should report itself as pressed')
+def step_filter_pressed(context, label):
+    chips = {c["label"]: c["pressed"] for c in context.site.filter_chips()}
+    assert chips.get(label) == "true", f"{label} reports aria-pressed={chips.get(label)}"
+
+
+@then('the "{label}" filter should not report itself as pressed')
+def step_filter_not_pressed(context, label):
+    chips = {c["label"]: c["pressed"] for c in context.site.filter_chips()}
+    assert chips.get(label) == "false", f"{label} reports aria-pressed={chips.get(label)}"
+
+
+@when('I focus the "{label}" filter and press "{key}"')
+def step_keyboard_activate(context, label, key):
+    context.site.press_filter_with_keyboard(label, key)
+
+
+@then("every project link should have its own accessible name")
+def step_links_have_names(context):
+    labels = context.site.portfolio_link_labels()
+    missing = [i for i, label in enumerate(labels) if not label]
+    assert not missing, f"links without aria-label at positions {missing}"
+    assert len(set(labels)) == len(labels), f"duplicate accessible names: {labels}"
+
+
+@then("the portfolio headings should run h2 then h3")
+def step_heading_levels(context):
+    levels = context.site.portfolio_heading_levels()
+    assert levels[0] == "H2", f"section heading is {levels[0]}"
+    assert set(levels[1:]) == {"H3"}, f"card headings are {set(levels[1:])}"

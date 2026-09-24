@@ -4,14 +4,14 @@ Behaviour-driven tests for [markcustard.com](https://markcustard.com/) — my
 portfolio site — written in Gherkin and executed with Behave and Selenium
 WebDriver.
 
-**8 features, 74 scenarios, 245 steps.**
+**8 features, 85 scenarios, 287 steps.**
 
 | Feature | Covers |
 | --- | --- |
 | `navigation.feature` | Title, menu contents and order, scrollspy highlighting, section headings, hero, footer |
 | `about.feature` | Headline and the eight-item fact list |
 | `resume.feature` | Every role and qualification, plus a real PDF download |
-| `portfolio.feature` | Project cards, tags, repository links, Isotope filtering |
+| `portfolio.feature` | Project cards, tags, repository links, Isotope filtering, keyboard-operable filters |
 | `skills.feature` | The ten technical skill groups and the seven skill percentages |
 | `testimonials.feature` | All five testimonials, profile links, carousel pagination |
 | `contact.feature` | Contact blocks and form validation |
