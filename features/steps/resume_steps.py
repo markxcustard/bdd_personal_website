@@ -44,3 +44,13 @@ def step_pdf_saved(context):
     saved = [f for f in os.listdir(context.download_dir) if f.endswith(".pdf")]
     assert saved, "resume PDF was not written to disk"
     assert os.path.getsize(os.path.join(context.download_dir, saved[0])) > 0
+
+
+@then('the resume should have a "{title}" column heading')
+def step_resume_column_heading(context, title):
+    titles = context.site.driver.execute_script(
+        "return Array.from(document.querySelectorAll('#resume .resume-title'))"
+        ".filter(e => e.getAttribute('aria-hidden') !== 'true')"
+        ".map(e => e.textContent.trim());"
+    )
+    assert title in titles, f"{title!r} not among {titles}"

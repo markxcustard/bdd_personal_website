@@ -112,9 +112,9 @@ Feature: Portfolio grid
   Scenario: Each project advertises its headline number
     Then the project metrics should be:
       | title                       | metric       |
-      | Personal Website Automation | 177 tests    |
-      | BDD Personal Website        | 94 scenarios |
-      | Cypress Portfolio Tests     | 177 tests    |
+      | Personal Website Automation | 179 tests    |
+      | BDD Personal Website        | 95 scenarios |
+      | Cypress Portfolio Tests     | 179 tests    |
       | Flight Delay Notifier       | 91 tests     |
       | Pandas Filtering Films      | 54 tests     |
       | Films CRUD                  | 60 tests     |
